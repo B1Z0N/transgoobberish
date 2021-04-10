@@ -21,10 +21,27 @@ langs = LANGUAGES.copy()
 shuffle(langs)
 langs = [src_lang, *langs[:lang_num], src_lang]
 
+lang_to_txt, src_txt = {}, txt
 for i in progressbar(range(len(langs) - 1)):
     txt = translator.translate(txt, lang_src=langs[i], lang_tgt=langs[i + 1])
+    lang_to_txt[langs[i + 1]] = txt
 
 print('The result is: ', end='\n\n')
 print(txt, end='\n\n')
-print('Your text have made it through this: \n' + ' -> '.join(langs), end='\n\n')
+list_langs = lambda: print('Your text have made it through this: \n' + ' -> '.join(langs), end='\n\n')
+list_langs()
+
+lang = src_lang
+while True:
+    print('Enter the language from the list above, you\'d like to view text in.') 
+    info_lang = input('(\'src\' to view the meaning in source language): ')
+    if info_lang == 'src':
+        txt = translator.translate(txt, lang_src=lang, lang_tgt=src_lang)
+        print(f'\n{txt}', end='\n\n')
+    elif (txt := lang_to_txt.get(info_lang)) is not None:
+        print(f'\n{txt}', end='\n\n')
+    else:
+        print('\n!!!Ooops, there are no such language, try again!!!', end='\n\n')
+    list_langs()
+    lang = info_lang
 
